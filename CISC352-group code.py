@@ -70,7 +70,6 @@ def printBoard(board): #print out the board with Queen position and each gird wi
 if __name__=="__main__":
     new = board(8)
     placeQ(1, 2, new)
-    placeQ(6,6,new)
     printBoard(new)
     '''
     1 | 1 | 1 | 1 | 0 | 0 | 1 | 0
