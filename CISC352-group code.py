@@ -91,26 +91,53 @@ def removeQ(row, col, board):#remove Queen on the board by given specific row an
         removeRightDown(row, col, board)
         pos.threatened += 1 #add the extra threatened value. 
 
-#sets up board to have all queens in their own row, greedy start attempts to produce least number of conflicts
-def greedyStart(board_size):
+'''
+sets up board to have all queens in their own row but share the column.
+This was better than the greedy start because it forces errors early and prevents
+getting stuck on a local maximum
+'''
+def startState(board_size):
     new = board(board_size)
 
     size = range(len(new))
-    for i in size:
-        minConflict = board_size
-        minIndex = board_size
-        for j in size:
-            if new[i][j].threatened < minConflict:
-                minConflict = new[i][j].threatened
-                minIndex = j
+    for row in size:
+        placeQ(row, 0, new)
         
-        placeQ(i, minIndex, new)
-
     solvedBoard = iterativeRepair(new)
     printBoard(solvedBoard)
     
 def iterativeRepair(board):
-    return board        
+    size = len(board)
+    while True:
+        maxConflict = 0 #this keeps track of the maximum number of "threats"
+        minConflict = size #this keeps track of the minimum number of threats
+
+        dictMax = {} #stores the row and column of the space with the most number of threats, requires multiple entries if there is a tie
+        for row in range(size):
+            for col in range(size):
+                if board[row][col].hasQ and board[row][col].threatened > maxConflict:
+                    maxConflict = board[row][col].threatened
+                    dictMax.clear() #resets dictionary since it is outdated
+                    dictMax[row] = col #puts updated row and column information for space with most conflicts
+                elif board[row][col].hasQ and board[row][col].threatened == maxConflict:
+                    dictMax[row] = col
+
+        if maxConflict == 1: #this means the algorithm is complete
+            return board
+
+        lisMin = [] #stores the column containing the space with the least number of threats, in the row with the most number of threats
+        maxConflictRow = random.choice(list(dictMax)) #according to the algorithm, need to randomly choose the row if there is a tie
+        for col in range(size):
+            if board[maxConflictRow][col].threatened < minConflict: #finds the column containing the space with the min number of threats
+                minConflict = board[maxConflictRow][col].threatened
+                minConflictCol = col
+                lisMin.clear()
+                lisMin.append(col)
+            elif board[maxConflictRow][col].threatened == minConflict:
+                lisMin.append(col)
+                
+        removeQ(maxConflictRow, dictMax[maxConflictRow], board) #removes queen from threatened postion
+        placeQ(maxConflictRow, random.choice(lisMin), board) #puts queen in least threatened position, randomly selects colomn if there is a tie
     
 def printBoard(board): #print out the board with Queen position and each gird with its threatened value.
     size = range(len(board))
@@ -129,7 +156,7 @@ def printBoard(board): #print out the board with Queen position and each gird wi
 
 
 if __name__=="__main__":
-    greedyStart(10)
+    startState(16)
     '''
     1 | 1 | 1 | 1 | 0 | 0 | 1 | 0
     1 | 2 | Q | 1 | 1 | 1 | 2 | 1
