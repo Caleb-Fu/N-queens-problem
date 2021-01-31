@@ -39,6 +39,7 @@ def placeQ(row, col, board): #place Queen on the board by given specific row and
     pos = board[row][col]
     if pos.hasQ == True: # already take placed by another Queen.
         print("This position already has a Queen!")
+        return -1
     else:
         pos.hasQ = True
         for g in board[row]: #set threatened value for whole row.
@@ -96,17 +97,30 @@ sets up board to have all queens in their own row but share the column.
 This was better than the greedy start because it forces errors early and prevents
 getting stuck on a local maximum
 '''
-def startState(board_size):
-    new = board(board_size)
+def initialState1(board_size):
 
-    size = range(len(new))
-    for row in size:
+    new = board(board_size)
+    for row in range(board_size):
         placeQ(row, 0, new)
+
+    return new
         
-    solvedBoard = iterativeRepair(new)
-    printBoard(solvedBoard)
+
+def initialState2(board_size):
+
+    new = board(board_size)
+    rowLis = list(range(0, board_size))
+    colLis = list(range(0, board_size))
+    random.shuffle(rowLis)
+    random.shuffle(colLis)
+    for i in range(board_size):
+        placeQ(rowLis[i], colLis[i], new)
+
+    return new
     
+
 def iterativeRepair(board):
+    step = 0
     size = len(board)
     while True:
         maxConflict = 0 #this keeps track of the maximum number of "threats"
@@ -123,6 +137,7 @@ def iterativeRepair(board):
                     dictMax[row] = col
 
         if maxConflict == 1: #this means the algorithm is complete
+            print("Step:", step)
             return board
 
         lisMin = [] #stores the column containing the space with the least number of threats, in the row with the most number of threats
@@ -138,6 +153,8 @@ def iterativeRepair(board):
                 
         removeQ(maxConflictRow, dictMax[maxConflictRow], board) #removes queen from threatened postion
         placeQ(maxConflictRow, random.choice(lisMin), board) #puts queen in least threatened position, randomly selects colomn if there is a tie
+        step += 1
+
     
 def printBoard(board): #print out the board with Queen position and each gird with its threatened value.
     size = range(len(board))
@@ -155,16 +172,20 @@ def printBoard(board): #print out the board with Queen position and each gird wi
                     print("   ", board[i][j].threatened, end="   |")
 
 
-if __name__=="__main__":
-    startState(16)
-    '''
-    1 | 1 | 1 | 1 | 0 | 0 | 1 | 0
-    1 | 2 | Q | 1 | 1 | 1 | 2 | 1
-    0 | 1 | 2 | 1 | 0 | 0 | 1 | 0
-    1 | 0 | 1 | 1 | 1 | 0 | 1 | 0
-    0 | 0 | 1 | 0 | 1 | 1 | 1 | 0
-    0 | 0 | 1 | 0 | 0 | 1 | 2 | 1
-    1 | 1 | 2 | 1 | 1 | 1 | Q | 2
-    0 | 0 | 1 | 0 | 0 | 1 | 1 | 1
-    '''
+# Implement a solver that returns a list of queen's locations
+#  - Make sure the list is the right length, and uses the numbers from 0 .. BOARD_SIZE-1
+def solve(board_size):
+    
+    board = initialState1(board_size)
+    solvedBoard = iterativeRepair(board)
+    #printBoard(solvedBoard)
 
+    answer = []
+    for row in range(board_size):
+        for col in range(board_size):
+            if solvedBoard[row][col].hasQ:
+                answer.append(col+1)
+    return answer
+
+if __name__=="__main__":
+    print(solve(8))
