@@ -52,7 +52,7 @@ def placeQ(row, col, board): #place Queen on the board by given specific row and
         setRightUp(row, col, board)
         setRightDown(row, col, board)
         pos.threatened -= 1 #minus the extra threaten value.
-        return 1
+       
 
 #remove threatened value diagonally.
 def removeLeftUp(row, col, board):
