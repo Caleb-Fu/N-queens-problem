@@ -104,7 +104,6 @@ def initialState1(board_size):
     new = board(board_size)
     for row in range(board_size):
         placeQ(row, 0, new)
-
     return new
         
 
@@ -156,7 +155,7 @@ def iterativeRepair(board,qlist):
                 lisMin.append(col)
                 
                
-        num = removeQ(maxConflictRow, dictMax[maxConflictRow], board) #removes queen from threatened postion
+        removeQ(maxConflictRow, dictMax[maxConflictRow], board) #removes queen from threatened postion
         qlist.remove([maxConflictRow, dictMax[maxConflictRow]])
         if len(lisMin)>0:
             num = placeQ(maxConflictRow, random.choice(lisMin), board) #puts queen in least threatened position, randomly selects colomn if there is a tie
