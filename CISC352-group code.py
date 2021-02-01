@@ -113,22 +113,24 @@ def initialState2(board_size):
     colLis = list(range(0, board_size))
     random.shuffle(rowLis)
     random.shuffle(colLis)
+    qlist=[]
     for i in range(board_size):
         placeQ(rowLis[i], colLis[i], new)
-
-    return new
+        qlist.append([rowLis[i],colLis[i]])
+    return new,qlist
     
 
-def iterativeRepair(board):
+def iterativeRepair(board,qlist):
     step = 0
     size = len(board)
-    while True:
+    while step<10000:
         maxConflict = 0 #this keeps track of the maximum number of "threats"
         minConflict = size #this keeps track of the minimum number of threats
 
         dictMax = {} #stores the row and column of the space with the most number of threats, requires multiple entries if there is a tie
-        for row in range(size):
-            for col in range(size):
+        for queen in (qlist):    
+                row=queen[0]
+                col=queen[1]
                 if board[row][col].hasQ and board[row][col].threatened > maxConflict:
                     maxConflict = board[row][col].threatened
                     dictMax.clear() #resets dictionary since it is outdated
@@ -152,7 +154,13 @@ def iterativeRepair(board):
                 lisMin.append(col)
                 
         removeQ(maxConflictRow, dictMax[maxConflictRow], board) #removes queen from threatened postion
+   
+        qlist.remove([maxConflictRow, dictMax[maxConflictRow]])
+    
         placeQ(maxConflictRow, random.choice(lisMin), board) #puts queen in least threatened position, randomly selects colomn if there is a tie
+
+        qlist.append([maxConflictRow, random.choice(lisMin)])
+
         step += 1
 
     
@@ -176,9 +184,9 @@ def printBoard(board): #print out the board with Queen position and each gird wi
 #  - Make sure the list is the right length, and uses the numbers from 0 .. BOARD_SIZE-1
 def solve(board_size):
     
-    board = initialState1(board_size)
-    solvedBoard = iterativeRepair(board)
-    #printBoard(solvedBoard)
+    board,qlist = initialState2(board_size)
+    solvedBoard = iterativeRepair(board,qlist)
+    printBoard(solvedBoard)
 
     answer = []
     for row in range(board_size):
@@ -186,6 +194,7 @@ def solve(board_size):
             if solvedBoard[row][col].hasQ:
                 answer.append(col+1)
     return answer
+
 
 if __name__=="__main__":
     print(solve(8))
