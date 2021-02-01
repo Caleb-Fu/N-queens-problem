@@ -186,7 +186,7 @@ def solve(board_size):
     solvedBoard,qPostion= iterativeRepair(board,qlist)
     printBoard(solvedBoard)
 
-    answer = []
+    #answer = []
     
     solution=[]
     
