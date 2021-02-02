@@ -169,7 +169,7 @@ Returned: 1D list of updated queens positions (solution to n-queens problem)
 def solve(board_size):
     qLis = initialState(board_size)
     step = 0
-    maxIterations = 500 #maximum number of steps/moves allowed
+    maxIterations = board_size // 2 #maximum number of steps/moves allowed
 
     #initializes scores in the row and two diagonals based on initial board configuration
     qRow = calcRowScore(qLis)
