@@ -1,10 +1,12 @@
+
 import random
+import numpy as np
+
 
 '''
 Sets up the "board" so every queen is placed in its own row and column.
 The "rows" are shuffled to be in random order of a 1D array. Note that
 index 0 of the list will represent column 1, index 1 represents column 2, etc.
-
 Returned: 1D list, where the index represents the column, and the
           value at each index represents the row the queen is in.
           i.e. [3, 1, 4, 2] has queens in: column 1, row 3
@@ -13,14 +15,17 @@ Returned: 1D list, where the index represents the column, and the
                                            column 4, row 2
 '''
 def initialState(board_size):
-    qLis = list(range(1, board_size+1))
-    random.shuffle(qLis)
+    qLis = np.arange(board_size)
+    qLis += 1
+    qLis = qLis.tolist()
+    qLis = qLis[1::2] + qLis[::2]
+    #qLis = list(range(1, board_size+1))
+    #random.shuffle(qLis)
 
     return qLis
 '''
 Calculates the "score" of each row, which is the number of queens in that row.
 The score for each row is stored in a 1D list sized n.
-
 Returned: 1D list, where the index represents the row and the value is the number
           of queens found in that row. Again, note that index 0 represents row 1.
 '''
@@ -36,7 +41,6 @@ def calcRowScore(qLis):
 '''
 Calculates the "score" of each top-left to bottom-right diagonal, which is the number
 of queens in that diagonal. The score for each diagonal is stored in a 1D list sized (2n-1)
-
 Returned: 1D list, where the index represents the diagonal (starting bottom left corner)
           and the value is the number of queens found in that diagonal. Again, note that
           index 0 represents row 1.
@@ -53,7 +57,6 @@ def calcDiag1Score(qLis):
 '''
 Calculates the "score" of each bottom-left to top-right diagonal, which is the number
 of queens in that diagonal. The score for each diagonal is stored in a 1D list sized (2n-1)
-
 Returned: 1D list, where the index represents the diagonal (starting top-left corner)
           and the value is the number of queens found in that diagonal. Again, note that
           index 0 represents row 1.
@@ -71,7 +74,6 @@ def calcDiag2Score(qLis):
 Calculates the total number of threats for each queen on the board. Sums the threats in
 the row with the threats on the fist diagonal with the threats on the second diagonal.
 The total sum is stored in a 1D list sized n.
-
 Returned: 1D list, where the index represents the diagonal (starting top-left corner)
           and the value is the number of queens found in that diagonal. Again, note that
           index 0 represents row 1.
@@ -93,21 +95,13 @@ Iterates through the list of the threats against each queen and finds the most
 threatened (highest value). The index of the highest value is stored in a list.
 If there are multiple queens with the highest number of threats, one is seected
 randomly.
-
 Returned Value: int representing the index of the most threatened queen.
 '''
 def findMostThreatened(qThreatSums):
-    qMax = 0
-    qMaxTracker = []
-
-    for i in range(1, len(qThreatSums)+1):
-        if qThreatSums[i-1] > qMax:
-            qMax = qThreatSums[i-1]
-            qMaxTracker.clear() #clear old list since that was for a smaller number of threats
-            qMaxTracker.append(i) #append index of the queen with the most threats
-        elif qThreatSums[i-1] == qMax:
-            qMaxTracker.append(i)
- 
+    
+    qMaxTracker = np.argwhere(qThreatSums == np.amax(qThreatSums))
+    qMaxTracker += 1
+    qMaxTracker = qMaxTracker.flatten().tolist()
     qThreatenedIndex = random.choice(qMaxTracker) #randomly choose the most threatened queen
     
     return qThreatenedIndex
@@ -116,7 +110,6 @@ def findMostThreatened(qThreatSums):
 Calculates the number of threats for each space in the column containing the
 queen with the most threats. The number of threats is stored in a 1D array of
 size n.
-
 Returned Value: 1D list, where the index represents a row in the column,
                 and the value is the number of threats found in that space.
                 Again, note that index 0 represents row 1.
@@ -137,21 +130,13 @@ Iterates through the list of the threats against each space in a column, and fin
 the least threatened (lowest value). The index of the lowest value is stored in a list.
 If there are multiple spaces with the lowest number of threats, one is seected
 randomly.
-
 Returned Value: int representing the index of the least threatened space.
 '''
 def findLeastThreatened(qCol):
-    qMin = len(qCol)
-    qMinTracker = []
-
-    for i in range(1, len(qCol)+1):
-        if qCol[i-1] < qMin:
-            qMin = qCol[i-1]
-            qMinTracker.clear() #clear old list since that was for a larger number of threats
-            qMinTracker.append(i) #append index of the space with the least threats
-        elif qCol[i-1] == qMin:
-            qMinTracker.append(i)
- 
+    
+    qMinTracker = np.argwhere(qCol == np.amin(qCol))
+    qMinTracker += 1
+    qMinTracker = qMinTracker.flatten().tolist()
     qMinimumIndex = random.choice(qMinTracker) #randomly choose the least threatened space
     
     return qMinimumIndex
@@ -163,7 +148,6 @@ column. It also updates these values when a queen is moved from one row in a col
 another. This function has a while loop that will execute either until the board is soved
 (when the number of threats equals 1 - meaning it only has 1 queen, so no conflict) or
 until the number of iterations (moves) exceeds the max number of iterations allowed.
-
 Returned: 1D list of updated queens positions (solution to n-queens problem)
 '''
 def solve(board_size):
@@ -210,8 +194,7 @@ def solve(board_size):
 
 
 if __name__=="__main__":
-        solve(1000)
+        solve(987654)
 
         
 
-    
