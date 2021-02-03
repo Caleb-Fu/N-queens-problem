@@ -151,7 +151,7 @@ def solve(board_size):
     else:
         qLis = initialState(board_size, 0)
     step = 0
-    maxIterations = board_size // 2 #maximum number of steps/moves allowed
+    maxIterations = board_size #// 2 #maximum number of steps/moves allowed
 
     #initializes scores in the row and two diagonals based on initial board configuration
     qRow = calcRowScore(qLis)
@@ -165,6 +165,7 @@ def solve(board_size):
 
         if qThreatSums[qThreatenedIndex-1] == 1: #executes if current board is a solution
             answer = qLis
+            print('boardsize: ',board_size)
             print("Step: ", step)
             print(answer)
             
