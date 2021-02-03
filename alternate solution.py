@@ -14,6 +14,8 @@ def initialState(board_size, flag):
     qLis = qLis.tolist()
     if flag == 1:
         qLis = qLis[::2] + qLis[1::2]
+    elif flag == 2:
+        qLis = [qLis[board_size-1]] + qLis[:board_size-1:2] + qLis[1:board_size-1:2]
     else:
          qLis = qLis[1::2] + qLis[::2]
 
@@ -148,10 +150,12 @@ Returned: 1D list of updated queens positions (solution to n-queens problem)
 def solve(board_size):
     if (board_size-8) % 6 == 0:
         qLis = initialState(board_size, 1)
+    elif (board_size-9) % 6 == 0:
+        qLis = initialState(board_size, 2)
     else:
         qLis = initialState(board_size, 0)
     step = 0
-    maxIterations = board_size #// 2 #maximum number of steps/moves allowed
+    maxIterations = 60 #// 2 #maximum number of steps/moves allowed
 
     #initializes scores in the row and two diagonals based on initial board configuration
     qRow = calcRowScore(qLis)
