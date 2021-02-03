@@ -4,23 +4,18 @@ import numpy as np
 
 
 '''
-Sets up the "board" so every queen is placed in its own row and column.
-The "rows" are shuffled to be in random order of a 1D array. Note that
-index 0 of the list will represent column 1, index 1 represents column 2, etc.
-Returned: 1D list, where the index represents the column, and the
-          value at each index represents the row the queen is in.
-          i.e. [3, 1, 4, 2] has queens in: column 1, row 3
-                                           column 2, row 1
-                                           column 3, row 4
-                                           column 4, row 2
+Sets up the "board" if the size of board = 8+6n, then we choose the [odd]+[even]
+and if not, we choose [even]+[odd].
 '''
-def initialState(board_size):
+def initialState(board_size, flag):
+    
     qLis = np.arange(board_size)
     qLis += 1
     qLis = qLis.tolist()
-    qLis = qLis[1::2] + qLis[::2]
-    #qLis = list(range(1, board_size+1))
-    #random.shuffle(qLis)
+    if flag == 1:
+        qLis = qLis[::2] + qLis[1::2]
+    else:
+         qLis = qLis[1::2] + qLis[::2]
 
     return qLis
 '''
@@ -151,7 +146,10 @@ until the number of iterations (moves) exceeds the max number of iterations allo
 Returned: 1D list of updated queens positions (solution to n-queens problem)
 '''
 def solve(board_size):
-    qLis = initialState(board_size)
+    if (board_size-8) % 6 == 0:
+        qLis = initialState(board_size, 1)
+    else:
+        qLis = initialState(board_size, 0)
     step = 0
     maxIterations = board_size // 2 #maximum number of steps/moves allowed
 
@@ -161,6 +159,7 @@ def solve(board_size):
     qDiag2 = calcDiag2Score(qLis)
 
     while step <= maxIterations:
+        
         qThreatSums = calcThreatSum(qLis, qRow, qDiag1, qDiag2)
         qThreatenedIndex = findMostThreatened(qThreatSums)
 
@@ -189,12 +188,12 @@ def solve(board_size):
             qDiag2[qMinimumIndex + qThreatenedIndex - 2] += 1
             
             step += 1 #only updates if the new board is a different configuration from the old one
-    
+           
+            
     return solve(board_size)
 
 
 if __name__=="__main__":
-        solve(987654)
-
+        solve(546878) 
         
 
