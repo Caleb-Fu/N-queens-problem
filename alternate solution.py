@@ -1,17 +1,11 @@
-
 import random
-import numpy as np
-
 
 '''
 Sets up the "board" if the size of board = 8+6n, then we choose the [odd]+[even]
 and if not, we choose [even]+[odd].
 '''
 def initialState(board_size, flag):
-    
-    qLis = np.arange(board_size)
-    qLis += 1
-    qLis = qLis.tolist()
+    qLis = list(range(1, board_size+1))
     if flag == 1:
         qLis = qLis[::2] + qLis[1::2]
     elif flag == 2:
@@ -95,12 +89,18 @@ randomly.
 Returned Value: int representing the index of the most threatened queen.
 '''
 def findMostThreatened(qThreatSums):
+    qMax = 0
+    qMaxTracker = []
     
-    qMaxTracker = np.argwhere(qThreatSums == np.amax(qThreatSums))
-    qMaxTracker += 1
-    qMaxTracker = qMaxTracker.flatten().tolist()
-    qThreatenedIndex = random.choice(qMaxTracker) #randomly choose the most threatened queen
-    
+    for i in range(1, len(qThreatSums)+1):
+        if qThreatSums[i-1] > qMax:
+            qMax = qThreatSums[i-1]
+            qMaxTracker.clear() #clear old list since that was for a smaller number of threats
+            qMaxTracker.append(i) #append index of the queen with the most threats
+        elif qThreatSums[i-1] == qMax:
+            qMaxTracker.append(i)
+    qThreatenedIndex = random.choice(qMaxTracker)
+            
     return qThreatenedIndex
 
 '''
@@ -129,13 +129,21 @@ If there are multiple spaces with the lowest number of threats, one is seected
 randomly.
 Returned Value: int representing the index of the least threatened space.
 '''
-def findLeastThreatened(qCol):
-    
-    qMinTracker = np.argwhere(qCol == np.amin(qCol))
-    qMinTracker += 1
-    qMinTracker = qMinTracker.flatten().tolist()
+def findLeastThreatened(qCol,qOrigin):
+    qMin = len(qCol)
+    qMinTracker = []
+
+    for i in range(1, len(qCol)+1):
+        if qCol[i-1] < qMin and qCol[i-1] != qOrigin:
+            qMin = qCol[i-1]
+            qMinTracker.clear() #clear old list since that was for a larger number of threats
+            qMinTracker.append(i) #append index of the space with the least threats
+        elif qCol[i-1] == qMin and qCol[i-1] != qOrigin:
+            qMinTracker.append(i)
+ 
     qMinimumIndex = random.choice(qMinTracker) #randomly choose the least threatened space
     
+
     return qMinimumIndex
 
 '''
@@ -178,7 +186,7 @@ def solve(board_size):
         qCol = calcColScore(qThreatenedIndex, qThreatSums, qLis, qRow, qDiag1, qDiag2)
         qLisOld = qLis[:] #make a copy of the old list before a queen is moved
         
-        qMinimumIndex = findLeastThreatened(qCol)
+        qMinimumIndex = findLeastThreatened(qCol, qLis[qThreatenedIndex-1])
         qLis[qThreatenedIndex-1] = qMinimumIndex
 
         #updates values in the tracking lists of row and diagonal scores
@@ -199,6 +207,5 @@ def solve(board_size):
 
 
 if __name__=="__main__":
-        solve(546878) 
-        
+    solve(1000004)
 
