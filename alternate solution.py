@@ -223,7 +223,6 @@ def solve(board_size):
             answer = qLis
             print('boardsize: ',board_size)
             print("Step: ", step)
-            print(answer)
             
             return answer
         
@@ -251,4 +250,4 @@ def solve(board_size):
 
 
 if __name__=="__main__":
-    solve(1000004)
+    print(solve(1000004))
